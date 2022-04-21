@@ -12,7 +12,7 @@ HEIGHT = 800
 "Game constants"
 #Todo 1: Vytvorte konštanty pre zrýchlenie rakety a rýchlosť otáčania a pokúste sa nájsť optimálne hodnoty
 ACCELERATION = 120
-ROTATION_SPEED = 0.15
+ROTATION_SPEED = 0.12
 
 
 objects = []                    #ZOZNAM VŠETKÝCH AKTÍVNYCH OBJEKTOV V HRE
