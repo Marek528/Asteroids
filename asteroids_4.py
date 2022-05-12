@@ -205,6 +205,8 @@ class Spaceship(SpaceObject):
             if d < self.radius + obj.radius:
                 obj.hit_by_spaceship(self)
                 break
+        
+        self.get_position()
 
     "Metóda zodpovedná za reset pozície rakety"
     def reset(self):
@@ -217,24 +219,25 @@ class Spaceship(SpaceObject):
     def reload_laser(self, dt):
         self.laser_loaded = True
 
+    def get_position(self):
+        global position_x, position_y, rotation
+        position_x = self.sprite.x
+        position_y = self.sprite.y
+        rotation = self.rotation
+                
+
     def shield_activate(self):
         self.shield = True
-        self.get_position()
         img = pyglet.image.load('Assetss\PNG\Effects\shield1.png')
         set_anchor_of_image_to_center(img)
         shield = Shield(img, self.sprite.x, self.sprite.y)
 
         game_objects.append(shield)
         pyglet.clock.schedule_once(self.shield_disable, shield_life)
-    
+        self.get_position()
+
     def shield_disable(self, dt):
         self.shield = False
-
-    def get_position(self):
-        global position_x, position_y, rotation
-        position_x = self.sprite.x
-        position_y = self.sprite.y
-        rotation = self.rotation
 
 """
 Trieda Asteroid
@@ -285,11 +288,12 @@ class Shield(SpaceObject):
         self.shield_life = shield_life
     
     def tick(self, dt):
-        global position_x, position_y
+        global position_x, position_y, rotation
         super().tick(dt)
 
         self.sprite.x = position_x
         self.sprite.y = position_y
+        self.rotation = rotation
 
         self.shield_life -= dt
         if self.shield_life <= 0:
