@@ -28,6 +28,8 @@ position_x = 0
 position_y = 0
 rotation = 0
 
+ship_lifes = 3
+
 "Score"
 score = 0
 "------------------- FUNKCIE __________________"
@@ -141,7 +143,7 @@ class Spaceship(SpaceObject):
         super().__init__(sprite,x,y)
         self.laser_loaded = True
         self.shield = self.shield_activate()
-
+    
     """
     Metóda zodpovedná za vystrelenie laseru
     """
@@ -156,8 +158,6 @@ class Spaceship(SpaceObject):
         laser.rotation = self.rotation
 
         game_objects.append(laser)
-
-
 
     """
     Každý frame sa vykoná táto metóda to znamená v našom prípade:
@@ -205,7 +205,7 @@ class Spaceship(SpaceObject):
             if d < self.radius + obj.radius:
                 obj.hit_by_spaceship(self)
                 break
-        
+
         self.get_position()
 
     "Metóda zodpovedná za reset pozície rakety"
@@ -224,7 +224,6 @@ class Spaceship(SpaceObject):
         position_x = self.sprite.x
         position_y = self.sprite.y
         rotation = self.rotation
-                
 
     def shield_activate(self):
         self.shield = True
@@ -245,10 +244,12 @@ Trieda Asteroid
 class Asteroid(SpaceObject):
     "Metóda ktorá sa vykoná ak dôjde ku kolízii lode a asteroidu"
     def hit_by_spaceship(self, ship):
+        global ship_lifes
         if ship.shield == False:
             pressed_keyboards.clear()
             ship.reset()
             ship.shield_activate()
+            ship_lifes -= 1
         self.delete()
 
     "Metóda ktorá sa vykoná ak dôjde ku kolízii a asteroidu"
@@ -321,6 +322,12 @@ class Game:
                            'Assetss/PNG/Meteors/meteorGrey_med1.png',
                            'Assetss/PNG/Meteors/meteorGrey_small1.png',
                            'Assetss/PNG/Meteors/meteorGrey_tiny1.png']
+        self.ship_life_image = pyglet.image.load('Assetss/PNG/UI/playerLife1_blue.png')
+
+    def ship_life(self):
+        for i in range(ship_lifes):
+            self.ship_life_image.blit(30 + i*35, 30)
+        sprite = pyglet.sprite.Sprite(self.ship_life_image, batch=batch)
 
     """
     Vytvorenie objektov pre začiatok hry
@@ -339,7 +346,7 @@ class Game:
         self.create_asteroids(count=7)
         #Pridavanie novych asteroidoch každych 10 sekund
         pyglet.clock.schedule_interval(self.create_asteroids, 10, 1)
-
+        
     def create_asteroids(self, dt=0, count=1):
         "Vytvorenie X asteroidov"
         for i in range(count):
@@ -370,11 +377,15 @@ class Game:
         # Vykreslenie pozadia
         self.background.draw()
         scoreLabel = pyglet.text.Label(text=str(score), font_size=40,x = 1150, y = 760, anchor_x='right', anchor_y='center')
-        scoreLabel.draw() 
+        scoreLabel.draw()
+
+        self.ship_life()
 
         "Vykreslenie koliznych koliečok"
+        """
         for o in game_objects:
             draw_circle(o.sprite.x, o.sprite.y, o.radius)
+        """
 
         # Táto časť sa stará o to aby bol prechod cez okraje okna plynulý a nie skokový
         for x_offset in (-self.window.width, 0, self.window.width):
