@@ -227,7 +227,7 @@ class Spaceship(SpaceObject):
 
     def shield_activate(self):
         self.shield = True
-        img = pyglet.image.load('Assetss\PNG\Effects\shield1.png')
+        img = pyglet.image.load('Assetss/PNG/Effects/shield1.png')
         set_anchor_of_image_to_center(img)
         shield = Shield(img, self.sprite.x, self.sprite.y)
 
@@ -368,6 +368,19 @@ class Game:
             asteroid = Asteroid(img, position[0], position[1], tmp_speed_x, tmp_speed_y)
             game_objects.append(asteroid)
 
+    def game_over_bg(self):
+        if ship_lifes <= 0:
+            load_image = pyglet.image.load('Assetss/Backgrounds/game_over.png')
+            image = pyglet.sprite.Sprite(load_image)
+            image.scale_x = 6
+            image.scale_y = 4
+            game_objects.clear()
+            image.draw()
+            text_win = pyglet.text.Label(text='Game Over!',x=WIDTH//2,y=HEIGHT//2+30,font_size=50,anchor_x='center',anchor_y='center', font_name='Comic Sans MS')
+            text_score = pyglet.text.Label(text=f'Your score: {score}',x=WIDTH//2,y=HEIGHT//2-30,font_size=30,anchor_x='center',anchor_y='center')
+            text_win.draw()
+            text_score.draw()
+
     """
     Event metóda ktorá sa volá na udalosť on_draw stále dookola
     """
@@ -380,7 +393,8 @@ class Game:
         scoreLabel.draw()
 
         self.ship_life()
-
+        self.game_over_bg()
+        
         "Vykreslenie koliznych koliečok"
         """
         for o in game_objects:
